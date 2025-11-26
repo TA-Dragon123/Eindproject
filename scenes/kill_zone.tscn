@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://c5uqfcyekp6h"]
+
+[ext_resource type="Script" uid="uid://d0vroangflnxo" path="res://scripts/kill_zone.gd" id="1_kebdr"]
+
+[node name="KillZone" type="Area2D"]
+script = ExtResource("1_kebdr")
+
+[node name="Timer" type="Timer" parent="."]
