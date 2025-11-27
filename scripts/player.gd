@@ -1,5 +1,5 @@
 extends CharacterBody2D
-
+# normaale variaalen 
 const SPEED = 300.0
 const JUMP_VELOCITY = -300.0
 var player_hp = 0
@@ -11,11 +11,11 @@ var is_blocking = false
 var SP = false
 var	Player_DMG = 5
 
-# Parry System
+# Parry System variaabele
 var block_window = 0.0
 var parry_window_duration = 0.2  # 0.2 seconden voor perfect parry
 
-# Combo System
+# Combo System variaable 
 var combo_count = 0
 var combo_timer = 0.0
 var combo_window = 1.5  # 1.5 seconden om combo voort te zetten
@@ -44,7 +44,7 @@ func _physics_process(delta: float) -> void:
 	# Update parry window
 	if block_window > 0:
 		block_window -= delta
-	
+	#stunned
 	if is_stunned:
 		if not is_on_floor():
 			velocity += get_gravity() * delta
@@ -53,7 +53,7 @@ func _physics_process(delta: float) -> void:
 			velocity.x = move_toward(velocity.x, 0, SPEED * delta * 10)  # Snel afremmen
 		move_and_slide()
 		return
-		
+	#attacking
 	if is_attacking:
 		# Stop horizontal movement tijdens attack
 		velocity.x = move_toward(velocity.x, 0, SPEED * delta * 5)  # Rem af
@@ -70,11 +70,11 @@ func _physics_process(delta: float) -> void:
 	elif direction == -1:
 		last_diraction = -1
 	#attacks
-	if Input.is_action_just_pressed("attack")  and is_on_floor():
+	if Input.is_action_just_pressed("attack")  and is_on_floor() and is_stunned == false:
 		attack()
 		return
-	
-	if Input.is_action_just_pressed("SP") and is_on_floor():
+	#SP attack
+	if Input.is_action_just_pressed("SP") and is_on_floor() and is_stunned == false:
 		normal_SP()
 		return
 	
@@ -107,6 +107,7 @@ func _physics_process(delta: float) -> void:
 		animated_sprite.flip_h = false
 	elif direction < 0:
 		animated_sprite.flip_h = true
+		
 	# all the movement animaaties afspelen
 	if is_on_floor():
 		if direction == 0:
@@ -129,6 +130,10 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func attack():
+	
+	if is_stunned:
+		return
+		
 	is_attacking = true
 	animated_sprite.play("attack")
 	
@@ -248,7 +253,7 @@ func normal_SP():
 func get_stunned(knockback_direction, damage = 5, is_special = false):  # ← Voeg parameter toe
 	# Perfect Parry!
 	if block_window > 0:
-		print("✨ PERFECT PARRY! ✨")
+		print("PERFECT PARRY!")
 		block_window = 0
 		
 		animated_sprite.modulate = Color(1, 1, 0)
