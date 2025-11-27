@@ -63,6 +63,9 @@ func _physics_process(delta: float) -> void:
 			velocity += get_gravity() * delta
 		move_and_slide()
 		return
+		
+		
+		
 	#kies waar je naar gaat
 	var direction := Input.get_axis("move_left", "move_right")
 	if direction == 1:
