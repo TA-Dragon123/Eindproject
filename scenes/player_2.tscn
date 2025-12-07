@@ -1,7 +1,23 @@
-[gd_scene load_steps=26 format=3 uid="uid://cit2b7xvjpeoi"]
+[gd_scene load_steps=30 format=3 uid="uid://cit2b7xvjpeoi"]
 
 [ext_resource type="Script" uid="uid://ch7s1ohvn4tec" path="res://scripts/player_2.gd" id="1_s551d"]
 [ext_resource type="Texture2D" uid="uid://ckb8ncvxsxppe" path="res://assets/Spritesheet.png" id="2_s551d"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a8ls1"]
+atlas = ExtResource("2_s551d")
+region = Rect2(0, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qfm1y"]
+atlas = ExtResource("2_s551d")
+region = Rect2(16, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fulsm"]
+atlas = ExtResource("2_s551d")
+region = Rect2(48, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4r5pv"]
+atlas = ExtResource("2_s551d")
+region = Rect2(32, 128, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g2els"]
 atlas = ExtResource("2_s551d")
@@ -71,8 +87,40 @@ region = Rect2(32, 16, 16, 16)
 atlas = ExtResource("2_s551d")
 region = Rect2(0, 32, 16, 16)
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_yjax8"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_s551d"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a8ls1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qfm1y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a8ls1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qfm1y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a8ls1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qfm1y")
+}, {
+"duration": 0.5,
+"texture": SubResource("AtlasTexture_fulsm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4r5pv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4r5pv")
+}],
+"loop": true,
+"name": &"SP",
+"speed": 5.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_g2els")
@@ -88,7 +136,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"attack",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -193,8 +241,8 @@ light_mask = 3
 visibility_layer = 2
 position = Vector2(0, -16)
 scale = Vector2(2, 2)
-sprite_frames = SubResource("SpriteFrames_yjax8")
-animation = &"fall"
+sprite_frames = SubResource("SpriteFrames_s551d")
+animation = &"SP"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

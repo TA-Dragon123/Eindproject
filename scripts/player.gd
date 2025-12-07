@@ -163,8 +163,14 @@ func attack():
 	# Nu werkt de loop!
 	for body in hit_bodies:
 		if body != self and body.has_method("get_stunned"):
+			# Deal damage met correcte knockback richting!
+			body.get_stunned(last_diraction, Player_DMG)  # Gebruik last_diraction!
+			player_hp += Player_DMG
+			print("Hit player!! Damage: " + str(Player_DMG))
+			print("Player2 HP: " + str(player_hp))
+			
 			# Visual feedback
-			get_node("/root/Game/Camera2D").shake(1 + combo_count)
+			get_node("/root/Game/Camera2D").shake(1 +(combo_count/2))
 			
 			# Hitstop
 			var hitstop_duration = 0.05 + (combo_count * 0.01)
@@ -179,11 +185,6 @@ func attack():
 			# Spawn hit effect
 			spawn_hit_effect(body.global_position)
 			
-			# Deal damage met correcte knockback richting!
-			body.get_stunned(last_diraction, Player_DMG)  # Gebruik last_diraction!
-			player_hp += Player_DMG
-			print("Hit player!! Damage: " + str(Player_DMG))
-			print("Player2 HP: " + str(player_hp))
 	
 	# Disable beide hitboxes
 	collision_shape_2d_right.disabled = true
@@ -242,7 +243,7 @@ func normal_SP():
 			if last_diraction == 1:
 				body.get_stunned(1, total_damage,SP)  # 1 = knockback naar rechts
 			if last_diraction == -1:
-				body.get_stunned(-1, total_damage,SP)  # 1 = knockback naar rechts
+				body.get_stunned(-1, total_damage,SP)  # -1 = knockback naar links
 			player_hp += total_damage
 			print("Hit player!! Damage: " + str(total_damage))
 			print("Player2 HP: " + str(player_hp))
@@ -253,7 +254,7 @@ func normal_SP():
 	await get_tree().create_timer(0.5).timeout
 	is_attacking = false
 
-func get_stunned(knockback_direction, damage = 5, is_special = false):  # ← Voeg parameter toe
+func get_stunned(knockback_direction, damage = 5, is_special = false):  
 	# Perfect Parry!
 	if block_window > 0:
 		print("PERFECT PARRY!")
@@ -280,7 +281,7 @@ func get_stunned(knockback_direction, damage = 5, is_special = false):  # ← Vo
 	
 	# Knockback
 	var knockback_force = 150 + (damage * 10 *(player_hp/10))
-	if is_special:  # ← Gebruik parameter in plaats van globale variabele
+	if is_special:  
 		knockback_force = 250 + (damage * 10 * (player_hp/10))
 		
 	velocity.x = knockback_direction * knockback_force

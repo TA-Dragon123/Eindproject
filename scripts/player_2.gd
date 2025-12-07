@@ -239,7 +239,7 @@ func normal_SP():
 			if last_diraction == 1:
 				body.get_stunned(1, total_damage,SP)  # 1 = knockback naar rechts
 			if last_diraction == -1:
-				body.get_stunned(-1, total_damage,SP)  # 1 = knockback naar rechts
+				body.get_stunned(-1, total_damage,SP)  # -1 = knockback naar links
 			player_hp += total_damage
 			print("Hit player!! Damage: " + str(total_damage))
 			print("Player2 HP: " + str(player_hp))
@@ -250,7 +250,7 @@ func normal_SP():
 	await get_tree().create_timer(0.5).timeout
 	is_attacking = false
 
-func get_stunned(knockback_direction, damage = 5, is_special = false):  # ← Voeg parameter toe
+func get_stunned(knockback_direction, damage = 5, is_special = false):  
 	# Perfect Parry!
 	if block_window > 0:
 		print("PERFECT PARRY!")
