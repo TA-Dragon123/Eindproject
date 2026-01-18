@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://ct2vinoyh2l36"]
+[gd_scene load_steps=11 format=3 uid="uid://ct2vinoyh2l36"]
 
 [ext_resource type="Texture2D" uid="uid://kty77pgqvxhn" path="res://assets/free-swamp-game-tileset-pixel-art/1 Tiles/Tileset.png" id="1_lnu2h"]
+[ext_resource type="PackedScene" uid="uid://nr2rqgi8hi05" path="res://scenes/main_menu.tscn" id="1_u5sy4"]
 [ext_resource type="PackedScene" uid="uid://c1vcniqum4tm1" path="res://scenes/player.tscn" id="1_uwrxv"]
 [ext_resource type="Texture2D" uid="uid://dc88k47dxshmr" path="res://assets/free-swamp-game-tileset-pixel-art/2 Background/Background.png" id="3_lbhrr"]
 [ext_resource type="PackedScene" uid="uid://cit2b7xvjpeoi" path="res://scenes/player_2.tscn" id="4_lbhrr"]
@@ -466,6 +467,8 @@ sources/0 = SubResource("TileSetAtlasSource_iywne")
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_p57ef"]
 
 [node name="Game" type="Node2D"]
+
+[node name="MainMenu" parent="." instance=ExtResource("1_u5sy4")]
 
 [node name="TileMap" type="TileMap" parent="."]
 top_level = true
