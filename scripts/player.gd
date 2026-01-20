@@ -3,6 +3,7 @@ extends CharacterBody2D
 const SPEED = 300.0
 const JUMP_VELOCITY = -300.0
 var player_hp = 0
+var player_lives = 3
 var last_diraction = 1
 var is_stunned = false
 var is_attacking = false 
@@ -21,6 +22,7 @@ var combo_timer = 0.0
 var combo_window = 1.5  # 1.5 seconden om combo voort te zetten
 
 #all de verwijzingen naar andere conponets
+@onready var lives_container = get_node("../CanvasLayer/P1Lives")
 @onready var player: CharacterBody2D = $"."
 @onready var collision_main: CollisionShape2D = $CollisionShape2D
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
@@ -29,10 +31,19 @@ var combo_window = 1.5  # 1.5 seconden om combo voort te zetten
 @onready var attack_hitbox_left: Area2D = $attack_hitbox_left
 @onready var collision_shape_2d_left: CollisionShape2D = $attack_hitbox_left/CollisionShape2D_left
 
+func _ready():
+	update_lives_ui()
+
 # Preload hit effect (maak dit later aan!)
 # var hit_effect_scene = preload("res://hit_effect.tscn")
 
 func _physics_process(delta: float) -> void:
+	
+	if global_position.y > 650:  
+		print ("gevallen ")
+		die()
+		return
+		
 	# Update combo timer
 	if combo_timer > 0:
 		combo_timer -= delta
@@ -131,7 +142,42 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 	
 	move_and_slide()
-
+func die():
+	if player_lives <= 0:
+		return
+	
+	var hearts = lives_container.get_children()
+	var last_heart = hearts[player_lives - 1]
+	last_heart.play("break")
+	
+	
+	
+	player_lives -= 1
+	update_lives_ui()
+	
+	print("Player died! Lives left: " + str(player_lives))
+	
+	if player_lives <= 0:
+		print("GAME OVER!")
+		await get_tree().create_timer(2.0).timeout
+		get_tree().reload_current_scene()
+	else:
+		respawn()
+func update_lives_ui():
+	var hearts = lives_container.get_children()
+	for i in range(hearts.size()):
+		if i < player_lives:
+			hearts[i].play("full")
+			hearts[i].visible = true
+		else:
+			pass	
+func respawn():
+	# Reset positie naar spawn point
+	global_position = Vector2(550, 100)  # Pas aan naar jouw spawn positie
+	velocity = Vector2.ZERO
+	is_stunned = false
+	is_attacking = false
+	player_hp = 0
 func attack():
 	
 	if is_stunned:
