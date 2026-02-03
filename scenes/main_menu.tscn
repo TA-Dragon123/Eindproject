@@ -15,28 +15,45 @@ position = Vector2(5, 1)
 [node name="ButtonManager" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 1153.0
+offset_bottom = 654.0
 
-[node name="Start" type="Button" parent="ButtonManager"]
-layout_mode = 0
-offset_left = 521.0
-offset_top = 306.0
-offset_right = 632.0
-offset_bottom = 354.0
+[node name="VBoxContainer" type="VBoxContainer" parent="ButtonManager"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -117.25
+offset_top = -87.0
+offset_right = 117.25
+offset_bottom = 87.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Start" type="Button" parent="ButtonManager/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_ekxnf")
 theme_override_font_sizes/font_size = 31
 text = "START"
-flat = true
 
-[node name="Button2" type="Button" parent="ButtonManager"]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+[node name="Game Options" type="Button" parent="ButtonManager/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("2_ekxnf")
+theme_override_font_sizes/font_size = 31
+text = "Game Options
+"
 
-[node name="Button3" type="Button" parent="ButtonManager"]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+[node name="Exit" type="Button" parent="ButtonManager/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("2_ekxnf")
+theme_override_font_sizes/font_size = 31
+text = "Exit"
 
-[connection signal="pressed" from="ButtonManager/Start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="ButtonManager/VBoxContainer/Start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="ButtonManager/VBoxContainer/Game Options" to="." method="_on_game_options_pressed"]
+[connection signal="pressed" from="ButtonManager/VBoxContainer/Exit" to="." method="_on_exit_pressed"]
