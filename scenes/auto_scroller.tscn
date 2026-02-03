@@ -97,4 +97,4 @@ stretch_mode = 1
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("8_oxnix")
-autoplay = true
+autoplay = false

@@ -31,8 +31,12 @@ var combo_window = 1.5  # 1.5 seconden om combo voort te zetten
 
 # Preload hit effect (maak dit later aan!)
 # var hit_effect_scene = preload("res://hit_effect.tscn")
+var can_move = true  
 
 func _physics_process(delta: float) -> void:
+	if not can_move:
+		return 
+	
 	# Update combo timer
 	if combo_timer > 0:
 		combo_timer -= delta

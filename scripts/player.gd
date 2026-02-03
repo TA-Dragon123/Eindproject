@@ -34,8 +34,7 @@ var combo_window = 1.5  # 1.5 seconden om combo voort te zetten
 func _ready():
 	update_lives_ui()
 
-# Preload hit effect (maak dit later aan!)
-# var hit_effect_scene = preload("res://hit_effect.tscn")
+var can_move = true  
 
 func _physics_process(delta: float) -> void:
 	
@@ -43,6 +42,8 @@ func _physics_process(delta: float) -> void:
 		print ("gevallen ")
 		die()
 		return
+	if not can_move:
+		return 
 		
 	# Update combo timer
 	if combo_timer > 0:

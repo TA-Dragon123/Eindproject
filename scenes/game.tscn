@@ -1,5 +1,6 @@
-[gd_scene load_steps=12 format=3 uid="uid://ct2vinoyh2l36"]
+[gd_scene load_steps=15 format=3 uid="uid://ct2vinoyh2l36"]
 
+[ext_resource type="Script" uid="uid://cyo3gyuddmws1" path="res://scenes/game.gd" id="1_0tnpc"]
 [ext_resource type="Texture2D" uid="uid://kty77pgqvxhn" path="res://assets/free-swamp-game-tileset-pixel-art/1 Tiles/Tileset.png" id="1_lnu2h"]
 [ext_resource type="PackedScene" uid="uid://nr2rqgi8hi05" path="res://scenes/main_menu.tscn" id="1_u5sy4"]
 [ext_resource type="PackedScene" uid="uid://c1vcniqum4tm1" path="res://scenes/player.tscn" id="1_uwrxv"]
@@ -8,6 +9,8 @@
 [ext_resource type="PackedScene" uid="uid://c5uqfcyekp6h" path="res://scenes/kill_zone.tscn" id="5_iywne"]
 [ext_resource type="Script" uid="uid://ddkar6tua828r" path="res://scripts/camera_2d.gd" id="6_p57ef"]
 [ext_resource type="SpriteFrames" uid="uid://ccmwsilu8c4aw" path="res://scenes/new_sprite_frames.tres" id="8_gee14"]
+[ext_resource type="FontFile" uid="uid://dmenwaeqlk1pv" path="res://assets/fonds/Pixelify_Sans/PixelifySans-VariableFont_wght.ttf" id="10_vtaks"]
+[ext_resource type="AudioStream" uid="uid://bkkv5ir20dyes" path="res://assets/sounds/3-2-1-go-green-screen-footage-2xoehcl8evq.mp3" id="11_kvpfn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_iywne"]
 texture = ExtResource("1_lnu2h")
@@ -468,6 +471,7 @@ sources/0 = SubResource("TileSetAtlasSource_iywne")
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_p57ef"]
 
 [node name="Game" type="Node2D"]
+script = ExtResource("1_0tnpc")
 
 [node name="MainMenu" parent="." instance=ExtResource("1_u5sy4")]
 
@@ -527,3 +531,21 @@ position = Vector2(-29, 157)
 scale = Vector2(5.4375, 5.281248)
 sprite_frames = ExtResource("8_gee14")
 animation = &"break"
+
+[node name="CountdownLabel" type="Label" parent="CanvasLayer"]
+offset_left = 492.0
+offset_top = 61.0
+offset_right = 641.0
+offset_bottom = 494.0
+theme_override_colors/font_color = Color(0.1764706, 1, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.48235294)
+theme_override_constants/outline_size = 30
+theme_override_fonts/font = ExtResource("10_vtaks")
+theme_override_font_sizes/font_size = 128
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="321" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("11_kvpfn")
+volume_db = 24.0
