@@ -1,25 +1,16 @@
-[gd_scene load_steps=3 format=3 uid="uid://nr2rqgi8hi05"]
+[gd_scene load_steps=4 format=3 uid="uid://nr2rqgi8hi05"]
 
 [ext_resource type="Script" uid="uid://beykpq8aakysh" path="res://scripts/main_menu.gd" id="1_l6cm7"]
 [ext_resource type="FontFile" uid="uid://dmenwaeqlk1pv" path="res://assets/fonds/Pixelify_Sans/PixelifySans-VariableFont_wght.ttf" id="2_ekxnf"]
+[ext_resource type="PackedScene" uid="uid://c3idsj77kmk8h" path="res://scenes/auto_scroller.tscn" id="3_bqqt6"]
 
 [node name="MainMenu" type="Node2D"]
 script = ExtResource("1_l6cm7")
 
-[node name="AutoScroller" parent="."]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-physics_interpolation_mode = 0
-auto_translate_mode = 0
-editor_description = ""
+[node name="AutoScroller" parent="." instance=ExtResource("3_bqqt6")]
 show_behind_parent = true
 z_index = -20
 position = Vector2(5, 1)
-script = null
 
 [node name="ButtonManager" type="Control" parent="."]
 layout_mode = 3
