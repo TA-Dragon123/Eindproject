@@ -15,6 +15,14 @@ run/main_scene="uid://nr2rqgi8hi05"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Global="*res://scripts/global.gd"
+
+[editor]
+
+version_control/autoload_on_startup=true
+
 [input]
 
 jump={

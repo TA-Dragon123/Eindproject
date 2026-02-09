@@ -1,10 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://ct2vinoyh2l36"]
+[gd_scene load_steps=11 format=3 uid="uid://ct2vinoyh2l36"]
 
 [ext_resource type="Script" uid="uid://cyo3gyuddmws1" path="res://scenes/game.gd" id="1_0tnpc"]
 [ext_resource type="PackedScene" uid="uid://nr2rqgi8hi05" path="res://scenes/main_menu.tscn" id="1_u5sy4"]
 [ext_resource type="PackedScene" uid="uid://c1vcniqum4tm1" path="res://scenes/player.tscn" id="1_uwrxv"]
-[ext_resource type="PackedScene" uid="uid://ct8os8b552ypg" path="res://scenes/game_map_1.tscn" id="3_vtaks"]
-[ext_resource type="PackedScene" uid="uid://cltjyc8de7anu" path="res://scenes/game_map_2.tscn" id="4_kvpfn"]
 [ext_resource type="PackedScene" uid="uid://cit2b7xvjpeoi" path="res://scenes/player_2.tscn" id="4_lbhrr"]
 [ext_resource type="PackedScene" uid="uid://c5uqfcyekp6h" path="res://scenes/kill_zone.tscn" id="5_iywne"]
 [ext_resource type="Script" uid="uid://ddkar6tua828r" path="res://scripts/camera_2d.gd" id="6_p57ef"]
@@ -18,11 +16,6 @@
 script = ExtResource("1_0tnpc")
 
 [node name="MainMenu" parent="." instance=ExtResource("1_u5sy4")]
-
-[node name="gameMap1" parent="." instance=ExtResource("3_vtaks")]
-
-[node name="gameMap2" parent="." instance=ExtResource("4_kvpfn")]
-visible = false
 
 [node name="Player" parent="." instance=ExtResource("1_uwrxv")]
 top_level = true

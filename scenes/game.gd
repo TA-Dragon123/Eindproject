@@ -6,10 +6,21 @@ extends Node2D
 @onready var _321: AudioStreamPlayer2D = $"321"
 
 
-
 var game_started = false
 
 func _ready():
+	var map_scene
+	if Global.selected_map == 1:
+		map_scene = load("res://scenes/game_map_1.tscn")
+		
+	else:
+		map_scene = load("res://scenes/game_map_2.tscn")
+	
+
+	var map_instance = map_scene.instantiate()
+	add_child(map_instance)
+	move_child(map_instance, 0) 
+	
 	start_countdown()
 
 func start_countdown():
