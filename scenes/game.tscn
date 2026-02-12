@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=3 uid="uid://ct2vinoyh2l36"]
 
-[ext_resource type="Script" uid="uid://cyo3gyuddmws1" path="res://scenes/game.gd" id="1_0tnpc"]
+[ext_resource type="Script" uid="uid://cyo3gyuddmws1" path="res://scripts/game.gd" id="1_0tnpc"]
 [ext_resource type="PackedScene" uid="uid://nr2rqgi8hi05" path="res://scenes/main_menu.tscn" id="1_u5sy4"]
 [ext_resource type="PackedScene" uid="uid://c1vcniqum4tm1" path="res://scenes/player.tscn" id="1_uwrxv"]
 [ext_resource type="PackedScene" uid="uid://cit2b7xvjpeoi" path="res://scenes/player_2.tscn" id="4_lbhrr"]
@@ -40,13 +40,13 @@ script = ExtResource("6_p57ef")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="P1Lives" type="HBoxContainer" parent="CanvasLayer"]
-offset_left = 80.0
-offset_top = 448.0
-offset_right = 199.0
-offset_bottom = 577.0
+offset_left = 73.0
+offset_top = 452.0
+offset_right = 192.0
+offset_bottom = 581.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CanvasLayer/P1Lives"]
-position = Vector2(144.99998, 155.99998)
+position = Vector2(152.00002, 158.99998)
 scale = Vector2(5.875, 5.375)
 sprite_frames = ExtResource("8_gee14")
 animation = &"break"
@@ -61,6 +61,34 @@ animation = &"break"
 
 [node name="AnimatedSprite2D3" type="AnimatedSprite2D" parent="CanvasLayer/P1Lives"]
 position = Vector2(-29, 157)
+scale = Vector2(5.4375, 5.281248)
+sprite_frames = ExtResource("8_gee14")
+animation = &"break"
+
+[node name="P2Lives" type="HBoxContainer" parent="CanvasLayer"]
+offset_left = 73.0
+offset_top = 452.0
+offset_right = 73.0
+offset_bottom = 581.0
+size_flags_horizontal = 4
+alignment = 1
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CanvasLayer/P2Lives"]
+position = Vector2(1037.0001, 151.99998)
+scale = Vector2(5.875, 5.375)
+sprite_frames = ExtResource("8_gee14")
+animation = &"break"
+frame = 2
+frame_progress = 1.0
+
+[node name="AnimatedSprite2D2" type="AnimatedSprite2D" parent="CanvasLayer/P2Lives"]
+position = Vector2(942.00006, 152.99998)
+scale = Vector2(5.531245, 5.1875005)
+sprite_frames = ExtResource("8_gee14")
+animation = &"break"
+
+[node name="AnimatedSprite2D3" type="AnimatedSprite2D" parent="CanvasLayer/P2Lives"]
+position = Vector2(843.99994, 154)
 scale = Vector2(5.4375, 5.281248)
 sprite_frames = ExtResource("8_gee14")
 animation = &"break"

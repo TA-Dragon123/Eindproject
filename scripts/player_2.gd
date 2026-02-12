@@ -1,8 +1,10 @@
 extends CharacterBody2D
+
 # normaale variaalen 
 const SPEED = 300.0
 const JUMP_VELOCITY = -300.0
 var player_hp = 0
+var player_lives = 3
 var last_diraction = 1
 var is_stunned = false
 var is_attacking = false 
@@ -11,16 +13,13 @@ var is_blocking = false
 var SP = false
 var	Player_DMG = 5
 
-# Parry System variaabele
-var block_window = 0.0
-var parry_window_duration = 0.2  # 0.2 seconden voor perfect parry
-
 # Combo System variaable 
 var combo_count = 0
 var combo_timer = 0.0
 var combo_window = 1.5  # 1.5 seconden om combo voort te zetten
 
 #all de verwijzingen naar andere conponets
+@onready var lives_container = get_node("../CanvasLayer/P2Lives")
 @onready var player: CharacterBody2D = $"."
 @onready var collision_main: CollisionShape2D = $CollisionShape2D
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
@@ -29,14 +28,20 @@ var combo_window = 1.5  # 1.5 seconden om combo voort te zetten
 @onready var attack_hitbox_left: Area2D = $attack_hitbox_left
 @onready var collision_shape_2d_left: CollisionShape2D = $attack_hitbox_left/CollisionShape2D_left
 
-# Preload hit effect (maak dit later aan!)
-# var hit_effect_scene = preload("res://hit_effect.tscn")
+func _ready():
+	update_lives_ui()
+
 var can_move = true  
 
 func _physics_process(delta: float) -> void:
+	
+	if global_position.y > 650:  
+		print ("gevallen")
+		die()
+		return
 	if not can_move:
 		return 
-	
+		
 	# Update combo timer
 	if combo_timer > 0:
 		combo_timer -= delta
@@ -45,9 +50,6 @@ func _physics_process(delta: float) -> void:
 			print("Combo ended at x" + str(combo_count))
 		combo_count = 0
 	
-	# Update parry window
-	if block_window > 0:
-		block_window -= delta
 	#stunned
 	if is_stunned:
 		if not is_on_floor():
@@ -67,12 +69,17 @@ func _physics_process(delta: float) -> void:
 			velocity += get_gravity() * delta
 		move_and_slide()
 		return
+		
+		
+		
 	#kies waar je naar gaat
 	var direction := Input.get_axis("move_left_2", "move_right_2")
 	if direction == 1:
 		last_diraction = 1
 	elif direction == -1:
 		last_diraction = -1
+		
+		
 	#attacks
 	if Input.is_action_just_pressed("attack_2")  and is_on_floor() and is_stunned == false:
 		attack()
@@ -81,12 +88,10 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("SP_2") and is_on_floor() and is_stunned == false:
 		normal_SP()
 		return
-	
-	
-	# Perfect Parry Window
-	if Input.is_action_just_pressed("block_2"):
-		block_window = parry_window_duration
-		print("Parry window active!")
+	#SP right
+	if Input.is_action_just_pressed("SP_RIGHT_2") and is_on_floor() and is_stunned == false:
+		attack_SP2()
+		return
 	#if block kan niet bewegen
 	if Input.is_action_pressed("block_2"):
 		is_blocking = true
@@ -132,7 +137,42 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 	
 	move_and_slide()
-
+func die():
+	if player_lives <= 0:
+		return
+	
+	var hearts = lives_container.get_children()
+	var last_heart = hearts[player_lives - 1]
+	last_heart.play("break")
+	
+	
+	
+	player_lives -= 1
+	update_lives_ui()
+	
+	print("Player died! Lives left: " + str(player_lives))
+	
+	if player_lives <= 0:
+		print("GAME OVER!")
+		await get_tree().create_timer(2.0).timeout
+		get_tree().reload_current_scene()
+	else:
+		respawn()
+func update_lives_ui():
+	var hearts = lives_container.get_children()
+	for i in range(hearts.size()):
+		if i < player_lives:
+			hearts[i].play("full")
+			hearts[i].visible = true
+		else:
+			pass	
+func respawn():
+	# Reset positie naar spawn point
+	global_position = Vector2(550, 100)  # Pas aan naar jouw spawn positie
+	velocity = Vector2.ZERO
+	is_stunned = false
+	is_attacking = false
+	player_hp = 0
 func attack():
 	
 	if is_stunned:
@@ -153,7 +193,7 @@ func attack():
 	
 	await get_tree().create_timer(0.2).timeout
 	
-	# Declareer hit_bodies BUITEN de if statement!
+	# Declareer hit_bodies BUITEN de if statement
 	var hit_bodies = []
 	
 	if last_diraction == 1:
@@ -164,14 +204,14 @@ func attack():
 	# Nu werkt de loop!
 	for body in hit_bodies:
 		if body != self and body.has_method("get_stunned"):
-			# Visual feedback
-			get_node("/root/Game/Camera2D").shake(1 + combo_count)
+			# Deal damage met correcte knockback richting!
+			body.get_stunned(last_diraction, Player_DMG,false,false )  # Gebruik last_diraction!
+			player_hp += Player_DMG
+			print("Hit player Damage: " + str(Player_DMG))
+			print("Player2 HP: " + str(player_hp))
 			
-			# Hitstop
-			var hitstop_duration = 0.05 + (combo_count * 0.01)
-			Engine.time_scale = 0.1
-			await get_tree().create_timer(hitstop_duration).timeout
-			Engine.time_scale = 1.0
+			# Visual feedback
+			get_node("/root/Game/Camera2D").shake(1 +(combo_count/2))
 			
 			# Show combo
 			if combo_count > 1:
@@ -180,20 +220,15 @@ func attack():
 			# Spawn hit effect
 			spawn_hit_effect(body.global_position)
 			
-			# Deal damage met correcte knockback richting!
-			body.get_stunned(last_diraction, Player_DMG)  # Gebruik last_diraction!
-			player_hp += Player_DMG
-			print("Hit player!! Damage: " + str(Player_DMG))
-			print("Player2 HP: " + str(player_hp))
 	
 	# Disable beide hitboxes
 	collision_shape_2d_right.disabled = true
 	collision_shape_2d_left.disabled = true
 	
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(0.1).timeout
 	is_attacking = false
-	
 func normal_SP():
+	
 	is_attacking = true
 	animated_sprite.play("SP")
 	
@@ -253,20 +288,63 @@ func normal_SP():
 	collision_shape_2d_left.disabled = true
 	await get_tree().create_timer(0.5).timeout
 	is_attacking = false
-
-func get_stunned(knockback_direction, damage = 5, is_special = false):  
-	# Perfect Parry!
-	if block_window > 0:
-		print("PERFECT PARRY!")
-		block_window = 0
-		
-		animated_sprite.modulate = Color(1, 1, 0)
-		await get_tree().create_timer(0.1).timeout
-		animated_sprite.modulate = Color(1, 1, 1)
-		
-		spawn_parry_effect(global_position)
-		return
 	
+func attack_SP2():
+	
+	if is_stunned:
+		return
+		
+	is_attacking = true
+	animated_sprite.play("SP_RIGHT")
+	Player_DMG = 10
+	
+	# Update combo
+	combo_count += 1
+	combo_timer = combo_window
+	
+	# Enable correct hitbox
+	if last_diraction == 1:
+		collision_shape_2d_right.disabled = false
+	elif last_diraction == -1:
+		collision_shape_2d_left.disabled = false
+	
+	await get_tree().create_timer(1.5).timeout
+	
+	# Declareer hit_bodies BUITEN de if statement
+	var hit_bodies = []
+	
+	if last_diraction == 1:
+		hit_bodies = attack_hitbox_right.get_overlapping_bodies()
+	elif last_diraction == -1:
+		hit_bodies = attack_hitbox_left.get_overlapping_bodies()
+	
+	# Nu werkt de loop!
+	for body in hit_bodies:
+		if body != self and body.has_method("get_stunned"):
+			# Deal damage met correcte knockback richting!
+			body.get_stunned(last_diraction, Player_DMG,false,false,true,false,false)  # Gebruik last_diraction!
+			player_hp += Player_DMG
+			print("Hit player Damage: " + str(Player_DMG))
+			print("Player2 HP: " + str(player_hp))
+			
+			# Visual feedback
+			get_node("/root/Game/Camera2D").shake(1 +(combo_count/2))
+			
+			# Show combo
+			if combo_count > 1:
+				print("COMBO x" + str(combo_count) + "!")
+			
+			# Spawn hit effect
+			spawn_hit_effect(body.global_position)
+			
+	
+	# Disable beide hitboxes
+	collision_shape_2d_right.disabled = true
+	collision_shape_2d_left.disabled = true
+	
+	await get_tree().create_timer(2.3).timeout
+	is_attacking = false
+func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy = false , is_SP2 = false, is_SP3 = false, is_SP4 = false):  
 	if is_blocking:
 		print("Attack blocked!")
 		velocity.x = knockback_direction * 50
@@ -280,26 +358,65 @@ func get_stunned(knockback_direction, damage = 5, is_special = false):
 	animated_sprite.play("hit")
 	
 	# Knockback
-	var knockback_force = 150 + (damage * 10 *(player_hp/10))
-	if is_special:  # ← Gebruik parameter in plaats van globale variabele
-		knockback_force = 250 + (damage * 10 * (player_hp/10))
+	if is_heavy:
+		var knockback_force = 150 + (damage * 10 *(player_hp/10))
+		if is_special:  
+			knockback_force = 250 + (damage * 10 * (player_hp/10))
+		velocity.x = knockback_direction * knockback_force
+		velocity.y = -100
+		player_hp += damage
+		print("Got hit! Damage: " + str(damage))
+		print("My HP: " + str(player_hp))
 		
-	velocity.x = knockback_direction * knockback_force
-	velocity.y = -100
-	
-	player_hp += damage
-	print("Got hit! Damage: " + str(damage))
-	print("My HP: " + str(player_hp))
-	
-	animated_sprite.modulate = Color(1, 0.3, 0.3)
-	await get_tree().create_timer(0.1).timeout
-	animated_sprite.modulate = Color(1, 1, 1)
-	
-	await get_tree().create_timer(stun_duration).timeout
+		animated_sprite.modulate = Color(1, 0.3, 0.3)
+		await get_tree().create_timer(0.1).timeout
+		animated_sprite.modulate = Color(1, 1, 1)
+		
+		await get_tree().create_timer(stun_duration).timeout
+	elif is_SP2:
+		for n in 8:
+			var knockback_force = 1
+			velocity.x = knockback_direction * knockback_force
+			velocity.y = -100
+			player_hp += 1
+			print("Got hit! Damage: " + str(damage))
+			print("My HP: " + str(player_hp))
+			
+			animated_sprite.modulate = Color(1, 0.3, 0.3)
+			await get_tree().create_timer(0.1).timeout
+			animated_sprite.modulate = Color(1, 1, 1)
+			
+			await get_tree().create_timer(0.1).timeout
+		var knockback_force = 150 + (damage * 10 *(player_hp/10))
+		velocity.x = knockback_direction * knockback_force
+		velocity.y = -100
+		player_hp += 1
+		print("Got hit! Damage: " + str(damage))
+		print("My HP: " + str(player_hp))
+			
+		animated_sprite.modulate = Color(1, 0.3, 0.3)
+		await get_tree().create_timer(0.1).timeout
+		animated_sprite.modulate = Color(1, 1, 1)
+			
+		await get_tree().create_timer(0.1).timeout
+		
+	else: 
+		var knockback_force = 0 
+		velocity.x = knockback_direction * knockback_force
+		velocity.y = 0
+		player_hp += damage
+		print("Got hit! Damage: " + str(damage))
+		print("My HP: " + str(player_hp))
+				
+		animated_sprite.modulate = Color(1, 0.3, 0.3)
+		await get_tree().create_timer(0.1).timeout
+		animated_sprite.modulate = Color(1, 1, 1)
+			
+		await get_tree().create_timer(0.4).timeout
+			
 	
 	is_stunned = false
 	animated_sprite.play("idle")
-
 func spawn_hit_effect(position: Vector2):
 	# Simpel particle effect met modulate
 	var effect = Sprite2D.new()
@@ -316,20 +433,3 @@ func spawn_hit_effect(position: Vector2):
 	tween.tween_callback(effect.queue_free)
 	
 	print("💥 Hit effect spawned!")
-
-func spawn_parry_effect(position: Vector2):
-	# Gouden cirkel effect voor parry
-	var effect = Sprite2D.new()
-	effect.texture = animated_sprite.sprite_frames.get_frame_texture("idle", 0)
-	effect.global_position = position
-	effect.modulate = Color(1, 1, 0, 1)  # Geel
-	effect.scale = Vector2(0.3, 0.3)
-	get_parent().add_child(effect)
-	
-	# Expand en fade
-	var tween = create_tween()
-	tween.tween_property(effect, "scale", Vector2(2, 2), 0.4)
-	tween.parallel().tween_property(effect, "modulate:a", 0.0, 0.4)
-	tween.tween_callback(effect.queue_free)
-	
-	print("✨ Parry effect spawned!")
