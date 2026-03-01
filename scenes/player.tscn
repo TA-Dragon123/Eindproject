@@ -298,7 +298,7 @@ height = 34.0
 [sub_resource type="GDScript" id="GDScript_g2els"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qhqgy"]
-size = Vector2(43, 34)
+size = Vector2(43, 35)
 
 [node name="Player" type="CharacterBody2D"]
 collision_mask = 3
@@ -334,5 +334,14 @@ script = SubResource("GDScript_g2els")
 
 [node name="CollisionShape2D_left" type="CollisionShape2D" parent="attack_hitbox_left"]
 position = Vector2(-34, -18)
+shape = SubResource("RectangleShape2D_qhqgy")
+disabled = true
+
+[node name="CollisionShape2D_down" type="Area2D" parent="."]
+collision_layer = 4
+script = SubResource("GDScript_g2els")
+
+[node name="CollisionShape2D_down" type="CollisionShape2D" parent="CollisionShape2D_down"]
+position = Vector2(0, 16.5)
 shape = SubResource("RectangleShape2D_qhqgy")
 disabled = true

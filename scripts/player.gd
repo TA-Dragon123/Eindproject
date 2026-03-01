@@ -27,6 +27,8 @@ var combo_window = 1.5  # 1.5 seconden om combo voort te zetten
 @onready var collision_shape_2d_right: CollisionShape2D = $attack_hitbox_right/CollisionShape2D_right
 @onready var attack_hitbox_left: Area2D = $attack_hitbox_left
 @onready var collision_shape_2d_left: CollisionShape2D = $attack_hitbox_left/CollisionShape2D_left
+@onready var collision_shape_2d_down: Area2D = $CollisionShape2D_down
+@onready var attack_hitbox_down: CollisionShape2D = $CollisionShape2D_down/CollisionShape2D_down
 
 func _ready():
 	update_lives_ui()
@@ -55,7 +57,7 @@ func _physics_process(delta: float) -> void:
 		if not is_on_floor():
 			velocity += get_gravity() * delta
 		else:
-			# BELANGRIJK: Stop horizontal movement when landing!
+			# Stop horizontal movement when landing!
 			velocity.x = move_toward(velocity.x, 0, SPEED * delta * 10)  # Snel afremmen
 		move_and_slide()
 		return
@@ -81,7 +83,10 @@ func _physics_process(delta: float) -> void:
 		
 		
 	#attacks
-	if Input.is_action_just_pressed("attack")  and is_on_floor() and is_stunned == false:
+	if Input.is_action_just_pressed("attack") and Input.is_action_pressed("move_down") and not is_on_floor() and is_stunned == false :
+		down_tilt_attack()
+		return
+	elif Input.is_action_just_pressed("attack") and is_stunned == false:
 		attack()
 		return
 	#SP attack
@@ -224,6 +229,58 @@ func attack():
 	# Disable beide hitboxes
 	collision_shape_2d_right.disabled = true
 	collision_shape_2d_left.disabled = true
+	
+	await get_tree().create_timer(0.1).timeout
+	is_attacking = false
+	
+func down_tilt_attack():
+	if is_stunned:
+		return
+		
+	is_attacking = true
+	animated_sprite.play("attack")
+	
+	# Update combo
+	combo_count += 1
+	combo_timer = combo_window
+	
+	# Enable correct hitbox
+	
+	attack_hitbox_down.disabled = false
+	
+	
+	await get_tree().create_timer(0.2).timeout
+	
+	# Declareer hit_bodies BUITEN de if statement
+	var hit_bodies = []
+	
+	
+	hit_bodies = collision_shape_2d_down.get_overlapping_bodies()
+	
+	# Nu werkt de loop!
+	for body in hit_bodies:
+		if body != self and body.has_method("get_stunned"):
+			# Deal damage met correcte knockback richting!
+			body.get_stunned(last_diraction, Player_DMG,false,false )  # Gebruik last_diraction!
+			player_hp += Player_DMG
+			print("Hit player Damage: " + str(Player_DMG))
+			print("Player2 HP: " + str(player_hp))
+			
+			# Visual feedback
+			get_node("/root/Game/Camera2D").shake(1 +(combo_count/2))
+			
+			# Show combo
+			if combo_count > 1:
+				print("COMBO x" + str(combo_count) + "!")
+			
+			# Spawn hit effect
+			spawn_hit_effect(body.global_position)
+			
+	
+	# Disable beide hitboxes
+	collision_shape_2d_right.disabled = true
+	collision_shape_2d_left.disabled = true
+	attack_hitbox_down.disabled = true
 	
 	await get_tree().create_timer(0.1).timeout
 	is_attacking = false
