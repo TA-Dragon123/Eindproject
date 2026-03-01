@@ -20,6 +20,7 @@ var combo_window = 1.5  # 1.5 seconden om combo voort te zetten
 
 #all de verwijzingen naar andere conponets
 @onready var lives_container = get_node("../CanvasLayer/P2Lives")
+@onready var percentage_label = get_node("../CanvasLayer/P2Percentage")
 @onready var player: CharacterBody2D = $"."
 @onready var collision_main: CollisionShape2D = $CollisionShape2D
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
@@ -28,8 +29,10 @@ var combo_window = 1.5  # 1.5 seconden om combo voort te zetten
 @onready var attack_hitbox_left: Area2D = $attack_hitbox_left
 @onready var collision_shape_2d_left: CollisionShape2D = $attack_hitbox_left/CollisionShape2D_left
 
+
 func _ready():
 	update_lives_ui()
+	update_percentage_ui()
 
 var can_move = true  
 
@@ -166,6 +169,15 @@ func update_lives_ui():
 			hearts[i].visible = true
 		else:
 			pass	
+func update_percentage_ui():
+	if player_hp >= 100:
+		percentage_label.add_theme_color_override("font_color", Color(1, 0, 0)) 
+	elif player_hp >= 50:
+		percentage_label.add_theme_color_override("font_color", Color(1, 0.4, 0.2))  
+	else:
+		percentage_label.add_theme_color_override("font_color", Color(0.921, 0.921, 0.921, 1.0))  
+	
+	percentage_label.text = str(player_hp) + "%"
 func respawn():
 	# Reset positie naar spawn point
 	global_position = Vector2(550, 100)  # Pas aan naar jouw spawn positie
@@ -206,7 +218,7 @@ func attack():
 		if body != self and body.has_method("get_stunned"):
 			# Deal damage met correcte knockback richting!
 			body.get_stunned(last_diraction, Player_DMG,false,false )  # Gebruik last_diraction!
-			player_hp += Player_DMG
+			
 			print("Hit player Damage: " + str(Player_DMG))
 			print("Player2 HP: " + str(player_hp))
 			
@@ -323,7 +335,7 @@ func attack_SP2():
 		if body != self and body.has_method("get_stunned"):
 			# Deal damage met correcte knockback richting!
 			body.get_stunned(last_diraction, Player_DMG,false,false,true,false,false)  # Gebruik last_diraction!
-			player_hp += Player_DMG
+			
 			print("Hit player Damage: " + str(Player_DMG))
 			print("Player2 HP: " + str(player_hp))
 			
@@ -365,6 +377,7 @@ func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy =
 		velocity.x = knockback_direction * knockback_force
 		velocity.y = -100
 		player_hp += damage
+		update_percentage_ui()
 		print("Got hit! Damage: " + str(damage))
 		print("My HP: " + str(player_hp))
 		
@@ -379,6 +392,7 @@ func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy =
 			velocity.x = knockback_direction * knockback_force
 			velocity.y = -100
 			player_hp += 1
+			update_percentage_ui()
 			print("Got hit! Damage: " + str(damage))
 			print("My HP: " + str(player_hp))
 			
@@ -391,6 +405,7 @@ func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy =
 		velocity.x = knockback_direction * knockback_force
 		velocity.y = -100
 		player_hp += 1
+		update_percentage_ui()
 		print("Got hit! Damage: " + str(damage))
 		print("My HP: " + str(player_hp))
 			
@@ -405,6 +420,7 @@ func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy =
 		velocity.x = knockback_direction * knockback_force
 		velocity.y = 0
 		player_hp += damage
+		update_percentage_ui()
 		print("Got hit! Damage: " + str(damage))
 		print("My HP: " + str(player_hp))
 				
