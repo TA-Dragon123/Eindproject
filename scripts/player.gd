@@ -18,7 +18,11 @@ var combo_count = 0
 var combo_timer = 0.0
 var combo_window = 1.5  # 1.5 seconden om combo voort te zetten
 
+var normol_chain_timer = 0
+var normol_chain_counter = 0
+
 #all de verwijzingen naar andere conponets
+@onready var P2_win = get_node("../CanvasLayer/P2win")
 @onready var lives_container = get_node("../CanvasLayer/P1Lives")
 @onready var percentage_label = get_node("../CanvasLayer/P1Percentage")
 @onready var player: CharacterBody2D = $"."
@@ -43,9 +47,6 @@ func _physics_process(delta: float) -> void:
 		print ("gevallen ")
 		die()
 		return
-	if not can_move:
-		return 
-		
 	# Update combo timer
 	if combo_timer > 0:
 		combo_timer -= delta
@@ -53,6 +54,19 @@ func _physics_process(delta: float) -> void:
 		if combo_count > 0:
 			print("Combo ended at x" + str(combo_count))
 		combo_count = 0
+	#normal chain timer
+	if normol_chain_timer > 0:
+		normol_chain_timer -= delta
+	else:
+		normol_chain_timer = 0
+	if  normol_chain_timer == 0:
+		normol_chain_counter = 0
+		
+		
+	if not can_move:
+		return 
+		
+	
 	
 	#stunned
 	if is_stunned:
@@ -146,6 +160,8 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 func die():
 	if player_lives <= 0:
+		Engine.time_scale = 0
+		P2_win.visible = true	
 		return
 	
 	var hearts = lives_container.get_children()
@@ -201,6 +217,8 @@ func attack():
 	combo_count += 1
 	combo_timer = combo_window
 	
+	
+	
 	# Enable correct hitbox
 	if last_diraction == 1:
 		collision_shape_2d_right.disabled = false
@@ -221,7 +239,7 @@ func attack():
 	for body in hit_bodies:
 		if body != self and body.has_method("get_stunned"):
 			# Deal damage met correcte knockback richting!
-			body.get_stunned(last_diraction, Player_DMG,false,false )  # Gebruik last_diraction!
+			body.get_stunned(last_diraction, Player_DMG,true,false,false,false,false )  # Gebruik last_diraction!
 			
 			print("Hit player Damage: " + str(Player_DMG))
 			print("Player2 HP: " + str(player_hp))
@@ -272,7 +290,7 @@ func down_tilt_attack():
 	for body in hit_bodies:
 		if body != self and body.has_method("get_stunned"):
 			# Deal damage met correcte knockback richting!
-			body.get_stunned(last_diraction, Player_DMG,false,false )  # Gebruik last_diraction!
+			body.get_stunned(last_diraction, Player_DMG,true,false,false,false,false )  # Gebruik last_diraction!
 			
 			print("Hit player Damage: " + str(Player_DMG))
 			print("Player2 HP: " + str(player_hp))
@@ -344,9 +362,9 @@ func normal_SP():
 			# Deal damage
 			SP = true	
 			if last_diraction == 1:
-				body.get_stunned(1, total_damage,SP)  # 1 = knockback naar rechts
+				body.get_stunned(last_diraction, Player_DMG,false,true,false,false,false )  # 1 = knockback naar rechts
 			if last_diraction == -1:
-				body.get_stunned(-1, total_damage,SP)  # -1 = knockback naar links
+				body.get_stunned(last_diraction, Player_DMG,false,true,false,false,false ) # -1 = knockback naar links
 			player_hp += total_damage
 			print("Hit player!! Damage: " + str(total_damage))
 			print("Player2 HP: " + str(player_hp))
@@ -412,7 +430,7 @@ func attack_SP2():
 	
 	await get_tree().create_timer(2.3).timeout
 	is_attacking = false
-func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy = false , is_SP2 = false, is_SP3 = false, is_SP4 = false):  
+func get_stunned(knockback_direction, damage = 5, is_normal = true ,is_SP1 = false , is_SP2 = false, is_SP3 = false, is_SP4 = false):  
 	if is_blocking:
 		print("Attack blocked!")
 		velocity.x = knockback_direction * 50
@@ -424,12 +442,37 @@ func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy =
 	
 	is_stunned = true
 	animated_sprite.play("hit")
+	var knockback_force = 150 + (damage * 10 *(player_hp/10))
+	
 	
 	# Knockback
-	if is_heavy:
-		var knockback_force = 150 + (damage * 10 *(player_hp/10))
-		if is_special:  
-			knockback_force = 250 + (damage * 10 * (player_hp/10))
+	if is_normal:
+		knockback_force = 150 + (damage * 10 *(player_hp/10))
+		normol_chain_timer += 1
+		if normol_chain_timer > 0:
+			normol_chain_counter +=1
+		if normol_chain_counter >= 4:
+			velocity.x = knockback_direction * knockback_force
+			normol_chain_counter = 0
+			normol_chain_timer = 0
+			
+		
+		velocity.y = -100
+		player_hp += damage
+		update_percentage_ui()
+		print("Got hit! Damage: " + str(damage))
+		print("My HP: " + str(player_hp))
+		
+		animated_sprite.modulate = Color(1, 0.3, 0.3)
+		await get_tree().create_timer(0.1).timeout
+		animated_sprite.modulate = Color(1, 1, 1)
+		
+		await get_tree().create_timer(1.5).timeout
+		
+	elif  is_SP1:
+		
+		 
+		knockback_force = 250 + (damage * 10 * (player_hp/10))
 		velocity.x = knockback_direction * knockback_force
 		velocity.y = -100
 		player_hp += damage
@@ -444,7 +487,7 @@ func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy =
 		await get_tree().create_timer(stun_duration).timeout
 	elif is_SP2:
 		for n in 8:
-			var knockback_force = 1
+			knockback_force = 1
 			velocity.x = knockback_direction * knockback_force
 			velocity.y = -100
 			player_hp += 1
@@ -457,7 +500,7 @@ func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy =
 			animated_sprite.modulate = Color(1, 1, 1)
 			
 			await get_tree().create_timer(0.1).timeout
-		var knockback_force = 150 + (damage * 10 *(player_hp/10))
+		knockback_force = 150 + (damage * 10 *(player_hp/10))
 		velocity.x = knockback_direction * knockback_force
 		velocity.y = -100
 		player_hp += 1
@@ -471,21 +514,6 @@ func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy =
 			
 		await get_tree().create_timer(0.1).timeout
 		
-	else: 
-		var knockback_force = 0 
-		velocity.x = knockback_direction * knockback_force
-		velocity.y = 0
-		player_hp += damage
-		update_percentage_ui()
-		print("Got hit! Damage: " + str(damage))
-		print("My HP: " + str(player_hp))
-				
-		animated_sprite.modulate = Color(1, 0.3, 0.3)
-		await get_tree().create_timer(0.1).timeout
-		animated_sprite.modulate = Color(1, 1, 1)
-			
-		await get_tree().create_timer(0.4).timeout
-			
 	
 	is_stunned = false
 	animated_sprite.play("idle")
