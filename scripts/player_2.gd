@@ -158,6 +158,8 @@ func _physics_process(delta: float) -> void:
 
 func die():
 	if player_lives <= 0:
+		Engine.time_scale = 0
+		P1_win.visible = true	
 		return
 	
 	var hearts = lives_container.get_children()
