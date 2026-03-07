@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://ct2vinoyh2l36"]
+[gd_scene load_steps=13 format=3 uid="uid://ct2vinoyh2l36"]
 
 [ext_resource type="Script" uid="uid://cyo3gyuddmws1" path="res://scripts/game.gd" id="1_0tnpc"]
 [ext_resource type="PackedScene" uid="uid://nr2rqgi8hi05" path="res://scenes/main_menu.tscn" id="1_u5sy4"]
@@ -7,10 +7,15 @@
 [ext_resource type="PackedScene" uid="uid://c5uqfcyekp6h" path="res://scenes/kill_zone.tscn" id="5_iywne"]
 [ext_resource type="Script" uid="uid://ddkar6tua828r" path="res://scripts/camera_2d.gd" id="6_p57ef"]
 [ext_resource type="SpriteFrames" uid="uid://ccmwsilu8c4aw" path="res://scenes/new_sprite_frames.tres" id="8_gee14"]
+[ext_resource type="Texture2D" uid="uid://be3t4evl7cdfs" path="res://assets/free frames pack by batareya/base 1.png" id="10_kvpfn"]
 [ext_resource type="FontFile" uid="uid://dmenwaeqlk1pv" path="res://assets/fonds/Pixelify_Sans/PixelifySans-VariableFont_wght.ttf" id="10_vtaks"]
 [ext_resource type="AudioStream" uid="uid://bkkv5ir20dyes" path="res://assets/sounds/3-2-1-go-green-screen-footage-2xoehcl8evq.mp3" id="11_kvpfn"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_p57ef"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dinhu"]
+bg_color = Color(0.6, 0.6, 0.6, 0.7294118)
+border_color = Color(0.8, 0.8, 0.8, 0.9529412)
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_0tnpc")
@@ -126,6 +131,95 @@ theme_override_font_sizes/font_size = 80
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="P1win" type="Label" parent="CanvasLayer"]
+visible = false
+offset_right = 1151.0
+offset_bottom = 649.0
+theme_override_fonts/font = ExtResource("10_vtaks")
+theme_override_font_sizes/font_size = 100
+text = "Player 1 wins"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="P2win" type="Label" parent="CanvasLayer"]
+visible = false
+offset_right = 1152.0
+offset_bottom = 651.0
+theme_override_fonts/font = ExtResource("10_vtaks")
+theme_override_font_sizes/font_size = 100
+text = "Player 2 wins"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="321" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("11_kvpfn")
 volume_db = 24.0
+
+[node name="CardSelectLayer" type="CanvasLayer" parent="."]
+
+[node name="CardSelectUI" type="Control" parent="CardSelectLayer"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -577.0
+offset_top = -323.0
+offset_right = 577.0
+offset_bottom = 323.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CardsContainer" type="HBoxContainer" parent="CardSelectLayer/CardSelectUI"]
+layout_direction = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -576.0
+offset_top = -101.0
+offset_right = 574.5
+offset_bottom = 124.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 50
+alignment = 1
+
+[node name="Card1" type="Button" parent="CardSelectLayer/CardSelectUI/CardsContainer"]
+custom_minimum_size = Vector2(150, 200)
+layout_mode = 2
+theme_override_constants/outline_size = 8
+theme_override_constants/align_to_largest_stylebox = 0
+theme_override_fonts/font = ExtResource("10_vtaks")
+theme_override_font_sizes/font_size = 23
+theme_override_styles/normal = SubResource("StyleBoxFlat_dinhu")
+icon = ExtResource("10_kvpfn")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Card2" type="Button" parent="CardSelectLayer/CardSelectUI/CardsContainer"]
+custom_minimum_size = Vector2(150, 200)
+layout_mode = 2
+theme_override_constants/outline_size = 8
+theme_override_constants/align_to_largest_stylebox = 0
+theme_override_fonts/font = ExtResource("10_vtaks")
+theme_override_font_sizes/font_size = 23
+theme_override_styles/normal = SubResource("StyleBoxFlat_dinhu")
+icon = ExtResource("10_kvpfn")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Card3" type="Button" parent="CardSelectLayer/CardSelectUI/CardsContainer"]
+custom_minimum_size = Vector2(150, 200)
+layout_mode = 2
+theme_override_constants/outline_size = 8
+theme_override_constants/align_to_largest_stylebox = 0
+theme_override_fonts/font = ExtResource("10_vtaks")
+theme_override_font_sizes/font_size = 23
+theme_override_styles/normal = SubResource("StyleBoxFlat_dinhu")
+icon = ExtResource("10_kvpfn")
+icon_alignment = 1
+expand_icon = true

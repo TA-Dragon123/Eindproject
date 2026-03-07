@@ -1,8 +1,8 @@
 extends CharacterBody2D
 
 # normaale variaalen 
-const SPEED = 300.0
-const JUMP_VELOCITY = -300.0
+var SPEED = 300.0
+var JUMP_VELOCITY = -300.0
 var player_hp = 0
 var player_lives = 3
 var last_diraction = 1
@@ -11,14 +11,19 @@ var is_attacking = false
 var stun_duration = 1.0
 var is_blocking = false
 var SP = false
-var	Player_DMG = 5
+var    Player_DMG = 5
+var Player_DMG_muliplyer = 1
 
 # Combo System variaable 
 var combo_count = 0
 var combo_timer = 0.0
 var combo_window = 1.5  # 1.5 seconden om combo voort te zetten
 
+var normol_chain_timer = 0
+var normol_chain_counter = 0
+
 #all de verwijzingen naar andere conponets
+@onready var P1_win = get_node("../CanvasLayer/P1win")
 @onready var lives_container = get_node("../CanvasLayer/P2Lives")
 @onready var percentage_label = get_node("../CanvasLayer/P2Percentage")
 @onready var player: CharacterBody2D = $"."
@@ -37,14 +42,12 @@ func _ready():
 var can_move = true  
 
 func _physics_process(delta: float) -> void:
+	update_lives_ui()
 	
 	if global_position.y > 650:  
 		print ("gevallen")
 		die()
 		return
-	if not can_move:
-		return 
-		
 	# Update combo timer
 	if combo_timer > 0:
 		combo_timer -= delta
@@ -52,6 +55,18 @@ func _physics_process(delta: float) -> void:
 		if combo_count > 0:
 			print("Combo ended at x" + str(combo_count))
 		combo_count = 0
+	#normal chain timer
+	if normol_chain_timer > 0:
+		normol_chain_timer -= delta
+	else:
+		normol_chain_timer = 0
+	if  normol_chain_timer == 0:
+		normol_chain_counter = 0
+		
+	if not can_move:
+		return 
+		
+	
 	
 	#stunned
 	if is_stunned:
@@ -140,6 +155,7 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 	
 	move_and_slide()
+
 func die():
 	if player_lives <= 0:
 		return
@@ -148,19 +164,24 @@ func die():
 	var last_heart = hearts[player_lives - 1]
 	last_heart.play("break")
 	
-	
-	
 	player_lives -= 1
 	update_lives_ui()
 	
-	print("Player died! Lives left: " + str(player_lives))
+	print("Player2 died! Lives left: " + str(player_lives))
 	
 	if player_lives <= 0:
-		print("GAME OVER!")
+		print("PLAYER 2 LOST THE ROUND!")
+		
+		# Toon win screen kort
+		P1_win.visible = true
 		await get_tree().create_timer(2.0).timeout
-		get_tree().reload_current_scene()
+		P1_win.visible = false
+		
+		# Nu roep card selection aan
+		get_parent().round_ended(self)
 	else:
 		respawn()
+
 func update_lives_ui():
 	var hearts = lives_container.get_children()
 	for i in range(hearts.size()):
@@ -168,7 +189,7 @@ func update_lives_ui():
 			hearts[i].play("full")
 			hearts[i].visible = true
 		else:
-			pass	
+			pass    
 func update_percentage_ui():
 	if player_hp >= 100:
 		percentage_label.add_theme_color_override("font_color", Color(1, 0, 0)) 
@@ -178,13 +199,15 @@ func update_percentage_ui():
 		percentage_label.add_theme_color_override("font_color", Color(0.921, 0.921, 0.921, 1.0))  
 	
 	percentage_label.text = str(player_hp) + "%"
+
 func respawn():
 	# Reset positie naar spawn point
-	global_position = Vector2(550, 100)  # Pas aan naar jouw spawn positie
+	global_position = Vector2(600, 100)  # Andere spawn positie dan P1!
 	velocity = Vector2.ZERO
 	is_stunned = false
 	is_attacking = false
-	player_hp = 0
+	# player_hp wordt gereset door game.gd
+
 func attack():
 	
 	if is_stunned:
@@ -217,10 +240,10 @@ func attack():
 	for body in hit_bodies:
 		if body != self and body.has_method("get_stunned"):
 			# Deal damage met correcte knockback richting!
-			body.get_stunned(last_diraction, Player_DMG,false,false )  # Gebruik last_diraction!
+			body.get_stunned(last_diraction, Player_DMG,true,false,false,false,false )  # Gebruik last_diraction!
 			
 			print("Hit player Damage: " + str(Player_DMG))
-			print("Player2 HP: " + str(player_hp))
+			print("Player1 HP: " + str(player_hp))
 			
 			# Visual feedback
 			get_node("/root/Game/Camera2D").shake(1 +(combo_count/2))
@@ -286,14 +309,11 @@ func normal_SP():
 			spawn_hit_effect(body.global_position)
 			
 			# Deal damage
-			SP = true	
+			SP = true    
 			if last_diraction == 1:
-				body.get_stunned(1, total_damage,SP)  # 1 = knockback naar rechts
+				body.get_stunned(last_diraction, Player_DMG,false,true,false,false,false)
 			if last_diraction == -1:
-				body.get_stunned(-1, total_damage,SP)  # -1 = knockback naar links
-			player_hp += total_damage
-			print("Hit player!! Damage: " + str(total_damage))
-			print("Player2 HP: " + str(player_hp))
+				body.get_stunned(last_diraction, Player_DMG,false,true,false,false,false)
 			
 	
 	collision_shape_2d_right.disabled = true
@@ -337,7 +357,6 @@ func attack_SP2():
 			body.get_stunned(last_diraction, Player_DMG,false,false,true,false,false)  # Gebruik last_diraction!
 			
 			print("Hit player Damage: " + str(Player_DMG))
-			print("Player2 HP: " + str(player_hp))
 			
 			# Visual feedback
 			get_node("/root/Game/Camera2D").shake(1 +(combo_count/2))
@@ -356,7 +375,8 @@ func attack_SP2():
 	
 	await get_tree().create_timer(2.3).timeout
 	is_attacking = false
-func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy = false , is_SP2 = false, is_SP3 = false, is_SP4 = false):  
+	
+func get_stunned(knockback_direction, damage = 5, is_normal = true ,is_SP1 = false , is_SP2 = false, is_SP3 = false, is_SP4 = false):  
 	if is_blocking:
 		print("Attack blocked!")
 		velocity.x = knockback_direction * 50
@@ -368,15 +388,40 @@ func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy =
 	
 	is_stunned = true
 	animated_sprite.play("hit")
+	var knockback_force = 150 + (damage * 10 *(player_hp/10))
+	
 	
 	# Knockback
-	if is_heavy:
-		var knockback_force = 150 + (damage * 10 *(player_hp/10))
-		if is_special:  
-			knockback_force = 250 + (damage * 10 * (player_hp/10))
+	if is_normal:
+		knockback_force = 150 + (damage * 10 *(player_hp/10))
+		normol_chain_timer += 1
+		if normol_chain_timer > 0:
+			normol_chain_counter +=1
+		if normol_chain_counter >= 4:
+			velocity.x = knockback_direction * knockback_force
+			normol_chain_counter = 0
+			normol_chain_timer = 0
+			
+		
+		velocity.y = -100
+		player_hp += (damage*Player_DMG_muliplyer)
+		update_percentage_ui()
+		print("Got hit! Damage: " + str(damage))
+		print("My HP: " + str(player_hp))
+		
+		animated_sprite.modulate = Color(1, 0.3, 0.3)
+		await get_tree().create_timer(0.1).timeout
+		animated_sprite.modulate = Color(1, 1, 1)
+		
+		await get_tree().create_timer(1.5).timeout
+		
+	elif  is_SP1:
+		
+		 
+		knockback_force = 250 + (damage * 10 * (player_hp/10))
 		velocity.x = knockback_direction * knockback_force
 		velocity.y = -100
-		player_hp += damage
+		player_hp += (damage*Player_DMG_muliplyer)
 		update_percentage_ui()
 		print("Got hit! Damage: " + str(damage))
 		print("My HP: " + str(player_hp))
@@ -388,10 +433,10 @@ func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy =
 		await get_tree().create_timer(stun_duration).timeout
 	elif is_SP2:
 		for n in 8:
-			var knockback_force = 1
+			knockback_force = 1
 			velocity.x = knockback_direction * knockback_force
 			velocity.y = -100
-			player_hp += 1
+			player_hp += (1*Player_DMG_muliplyer)
 			update_percentage_ui()
 			print("Got hit! Damage: " + str(damage))
 			print("My HP: " + str(player_hp))
@@ -401,10 +446,10 @@ func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy =
 			animated_sprite.modulate = Color(1, 1, 1)
 			
 			await get_tree().create_timer(0.1).timeout
-		var knockback_force = 150 + (damage * 10 *(player_hp/10))
+		knockback_force = 150 + (damage * 10 *(player_hp/10))
 		velocity.x = knockback_direction * knockback_force
 		velocity.y = -100
-		player_hp += 1
+		player_hp += (1*Player_DMG_muliplyer)
 		update_percentage_ui()
 		print("Got hit! Damage: " + str(damage))
 		print("My HP: " + str(player_hp))
@@ -415,24 +460,10 @@ func get_stunned(knockback_direction, damage = 5, is_special = false ,is_heavy =
 			
 		await get_tree().create_timer(0.1).timeout
 		
-	else: 
-		var knockback_force = 0 
-		velocity.x = knockback_direction * knockback_force
-		velocity.y = 0
-		player_hp += damage
-		update_percentage_ui()
-		print("Got hit! Damage: " + str(damage))
-		print("My HP: " + str(player_hp))
-				
-		animated_sprite.modulate = Color(1, 0.3, 0.3)
-		await get_tree().create_timer(0.1).timeout
-		animated_sprite.modulate = Color(1, 1, 1)
-			
-		await get_tree().create_timer(0.4).timeout
-			
 	
 	is_stunned = false
 	animated_sprite.play("idle")
+	
 func spawn_hit_effect(position: Vector2):
 	# Simpel particle effect met modulate
 	var effect = Sprite2D.new()
