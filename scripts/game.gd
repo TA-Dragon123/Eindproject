@@ -16,6 +16,10 @@ var current_cards = []
 var winner_player = null
 var game_started = false
 
+var player1_wins = 0
+var player2_wins = 0
+const WINS_TO_WIN = 5
+
 func _ready():
 	print("=== CHECKING CARD NODES ===")
 	print("CardSelectLayer exists: ", has_node("CardSelectLayer"))
@@ -84,20 +88,45 @@ func freeze_players(freeze: bool):
 
 # CARD SYSTEM FUNCTIES - NIEUW
 func round_ended(loser_player):
-	print("Round ended! Loser: ", loser_player.name)
+	print("=== ROUND ENDED ===")
+	print("Loser: ", loser_player.name)
 	
-	# Bepaal winnaar
+	# Bepaal winnaar en update win counter
 	var winner = null
 	if loser_player == player1:
 		winner = player2
+		player2_wins += 1
+		print("Player 2 wins this round! Total wins: ", player2_wins)
 	else:
 		winner = player1
+		player1_wins += 1
+		print("Player 1 wins this round! Total wins: ", player1_wins)
 	
+	# Check of iemand de game heeft gewonnen
+	if player1_wins >= WINS_TO_WIN:
+		game_over(player1)
+		return
+	elif player2_wins >= WINS_TO_WIN:
+		game_over(player2)
+		return
+	
+	# Anders: card selection
+	await get_tree().create_timer(1.0).timeout
+	show_card_selection(loser_player)
+func game_over(winner):
+	print("=== GAME OVER ===")
 	print("Winner: ", winner.name)
 	
-	# Toon card selection
-	await get_tree().create_timer(2.0).timeout
-	show_card_selection(loser_player)
+	# Toon win screen
+	countdown_label.text = winner.name + " WINS!"
+	countdown_label.add_theme_color_override("font_color", Color(1, 0.8, 0))  # Goud
+	countdown_label.visible = true
+	
+	# Wacht 3 seconden
+	await get_tree().create_timer(3.0).timeout
+	
+	# Ga terug naar main menu
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 func show_card_selection(loser_player):
 	winner_player = loser_player

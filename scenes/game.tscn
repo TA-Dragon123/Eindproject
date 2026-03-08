@@ -99,10 +99,10 @@ sprite_frames = ExtResource("8_gee14")
 animation = &"break"
 
 [node name="CountdownLabel" type="Label" parent="CanvasLayer"]
-offset_left = 492.0
-offset_top = 61.0
-offset_right = 641.0
-offset_bottom = 494.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 1153.0
+offset_bottom = 646.0
 theme_override_colors/font_color = Color(0.1764706, 1, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 0.48235294)
 theme_override_constants/outline_size = 30

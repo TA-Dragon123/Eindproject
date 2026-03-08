@@ -170,7 +170,7 @@ func die():
 	var last_heart = hearts[player_lives - 1]
 	last_heart.play("break")
 	
-	
+	player_hp = 0
 	
 	player_lives -= 1
 	update_lives_ui()
@@ -187,6 +187,7 @@ func die():
 		# Nu roep card selection aan
 		get_parent().round_ended(self)
 	else:
+		update_percentage_ui()
 		respawn()
 func update_lives_ui():
 	var hearts = lives_container.get_children()
