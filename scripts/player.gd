@@ -164,10 +164,8 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 func die():
 	if player_lives <= 0:
-		Engine.time_scale = 0
-		P2_win.visible = true	
 		return
-	
+		
 	var hearts = lives_container.get_children()
 	var last_heart = hearts[player_lives - 1]
 	last_heart.play("break")
