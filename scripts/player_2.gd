@@ -13,6 +13,8 @@ var is_blocking = false
 var SP = false
 var    Player_DMG = 5
 var Player_DMG_muliplyer = 1
+var has_jumped = false
+var has_not_dubbleJumped = true
 
 # Combo System variaable 
 var combo_count = 0
@@ -82,6 +84,9 @@ func _physics_process(delta: float) -> void:
 		# Stop horizontal movement tijdens attack
 		velocity.x = move_toward(velocity.x, 0, SPEED * delta * 5)  # Rem af
 		
+		
+		
+		
 		# Blijf gravity toepassen
 		if not is_on_floor():
 			velocity += get_gravity() * delta
@@ -89,7 +94,9 @@ func _physics_process(delta: float) -> void:
 		return
 		
 		
-		
+	if is_on_floor():
+		has_jumped = false
+		has_not_dubbleJumped = true	
 	#kies waar je naar gaat
 	var direction := Input.get_axis("move_left_2", "move_right_2")
 	if direction == 1:
@@ -126,6 +133,12 @@ func _physics_process(delta: float) -> void:
 	# JUMP
 	if Input.is_action_just_pressed("jump_2") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
+		has_jumped = true
+		has_not_dubbleJumped = true
+	# DUBBLE JUMP
+	if Input.is_action_just_pressed("jump_2") and not is_on_floor() and has_not_dubbleJumped == true:
+		velocity.y = JUMP_VELOCITY
+		has_not_dubbleJumped = false
 	# als je kijkt naar beneden kan je niet bewegen
 	if Input.is_action_pressed("move_down_2") and is_on_floor():
 		direction = 0
@@ -184,6 +197,7 @@ func die():
 		# Nu roep card selection aan
 		get_parent().round_ended(self)
 	else:
+		get_node("/root/Game/Camera2D").playercam("p2")
 		update_percentage_ui()
 		respawn()
 

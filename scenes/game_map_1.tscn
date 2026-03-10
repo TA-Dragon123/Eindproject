@@ -469,6 +469,6 @@ layer_0/tile_data = PackedInt32Array(2031644, 65536, 0, 2031645, 131072, 0, 2031
 
 [node name="Background" type="Sprite2D" parent="TileMap"]
 show_behind_parent = true
-position = Vector2(576, 324)
-scale = Vector2(2, 1.9907408)
+position = Vector2(574, 222.75002)
+scale = Vector2(2.6909723, 2.6157405)
 texture = ExtResource("2_dvs0c")

@@ -40,6 +40,19 @@ shape = SubResource("WorldBoundaryShape2D_p57ef")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(576, 325)
+zoom = Vector2(1.2, 1.2)
+limit_left = -200
+limit_top = -200
+limit_right = 1350
+limit_bottom = 645
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_left_margin = 0.1
+drag_top_margin = 0.1
+drag_right_margin = 0.1
+drag_bottom_margin = 0.0
+editor_draw_limits = true
+editor_draw_drag_margin = true
 script = ExtResource("6_p57ef")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
