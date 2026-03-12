@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://cit2b7xvjpeoi"]
+[gd_scene load_steps=31 format=3 uid="uid://cit2b7xvjpeoi"]
 
 [ext_resource type="Script" uid="uid://ch7s1ohvn4tec" path="res://scripts/player_2.gd" id="1_s551d"]
 [ext_resource type="Texture2D" uid="uid://u6htaxm21xkc" path="res://assets/Spritesheet.png" id="2_s551d"]
@@ -232,6 +232,9 @@ size = Vector2(43, 34)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0mr0g"]
 size = Vector2(43, 34)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s551d"]
+size = Vector2(46, 30)
+
 [node name="Player2" type="CharacterBody2D"]
 collision_mask = 3
 script = ExtResource("1_s551d")
@@ -266,3 +269,9 @@ script = SubResource("GDScript_oc1kf")
 position = Vector2(-34, -18)
 shape = SubResource("RectangleShape2D_0mr0g")
 disabled = true
+
+[node name="CollisionShape2D_down" type="Area2D" parent="."]
+
+[node name="CollisionShape2D_down" type="CollisionShape2D" parent="CollisionShape2D_down"]
+position = Vector2(-1, 14)
+shape = SubResource("RectangleShape2D_s551d")
