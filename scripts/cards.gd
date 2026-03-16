@@ -1,12 +1,11 @@
 extends Node
 
 
-# Card definities
 const CARDS = [
 	{
 		"name": "The Flash",
 		"description": "+50 movement speed",
-		"icon": "res://assets/free frames pack by batareya/base 9.png",  # Optioneel
+		"icon": "res://assets/free frames pack by batareya/base 9.png",  
 		"effect": "speed"
 	},
 	{

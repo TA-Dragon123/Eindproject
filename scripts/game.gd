@@ -5,7 +5,7 @@ extends Node2D
 @onready var player2 = $Player2  
 @onready var _321: AudioStreamPlayer2D = $"321"
 
-# Card system - NIEUW
+
 @onready var card_select_layer = $CardSelectLayer
 @onready var card_select_ui = $CardSelectLayer/CardSelectUI
 @onready var card1_button = $CardSelectLayer/CardSelectUI/CardsContainer/Card1
@@ -35,7 +35,7 @@ func _ready():
 	add_child(map_instance)
 	move_child(map_instance, 0)
 	
-	# Card system setup - NIEUW
+
 	# Check of nodes bestaan voordat je ze gebruikt
 	if has_node("CardSelectLayer"):
 		card_select_layer.visible = false
@@ -86,7 +86,6 @@ func freeze_players(freeze: bool):
 		player2.set_process_input(not freeze)
 		player2.can_move = not freeze
 
-# CARD SYSTEM FUNCTIES - NIEUW
 func round_ended(loser_player):
 	print("=== ROUND ENDED ===")
 	print("Loser: ", loser_player.name)

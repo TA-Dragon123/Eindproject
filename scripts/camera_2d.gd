@@ -10,13 +10,13 @@ func _process(delta):
 			randf_range(-shake_amount, shake_amount),
 			randf_range(-shake_amount, shake_amount)
 		)
-		shake_amount = lerp(shake_amount, 0.0, delta * 10.0)  # ← 0.0 en 10.0 (niet 0 en 10)
+		shake_amount = lerp(shake_amount, 0.0, delta * 10.0)  
 	else:
 		offset = Vector2.ZERO
 
 func shake(amount):
 	var one = 1
-	shake_amount = float(amount)  # ← Converteer naar float
+	shake_amount = float(amount)  
 func playercam(player):
 	if player == "p1":
 		playercamara = get_parent().get_node("Player2")

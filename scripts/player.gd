@@ -221,8 +221,8 @@ func update_percentage_ui():
 	
 	percentage_label.text = str(player_hp) + "%"
 func respawn():
-	# Reset positie naar spawn point
-	global_position = Vector2(550, 100)  # Pas aan naar jouw spawn positie
+	
+	global_position = Vector2(550, 100)  
 	velocity = Vector2.ZERO
 	is_stunned = false
 	is_attacking = false
